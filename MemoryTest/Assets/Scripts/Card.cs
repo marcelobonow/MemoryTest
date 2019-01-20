@@ -12,7 +12,6 @@ public enum CardState
     unflipping
 }
 
-
 public class Card : MonoBehaviour
 {
     [SerializeField] private Animator cardAnimator;
@@ -20,26 +19,28 @@ public class Card : MonoBehaviour
     [SerializeField] private Image backCardImage;
 
     private int spriteId;
-    private CardsController cardController;
+    private int cardId;
     private CardState currentState;
 
     private Action OnCardUnflip;
     private Action OnCardFlip;
+    private Action<Card> OnCardClicked;
 
     private void Awake()
     {
         currentState = CardState.normal;
     }
-    public void SetCard(int spriteId, int cardId, Sprite sprite, CardsController controller)
+    public void SetCard(int spriteId, int cardId, Sprite sprite)
     {
         frontCardImage.sprite = sprite;
         this.spriteId = spriteId;
-        cardController = controller;
+        this.cardId = cardId;
     }
-    public int GetSpriteId()
+    public int GetCardId()
     {
-        return spriteId;
+        return cardId;
     }
+
     public void AddOnCardUnflip(Action action)
     {
         OnCardUnflip += action;
@@ -48,13 +49,19 @@ public class Card : MonoBehaviour
     {
         OnCardFlip += action;
     }
+    public void AddOnClick(Action<Card> action)
+    {
+        OnCardClicked += action;
+    }
+
     public bool DoesPair(Card otherCard)
     {
-        return otherCard.GetSpriteId() == spriteId;
+        return otherCard.GetCardId() == cardId;
     }
     public void OnClick()
     {
-        cardController.OnCardClick(this);
+        if(OnCardClicked != null)
+            OnCardClicked(this);
     }
 
     public void AnimateFlipping()
@@ -68,7 +75,7 @@ public class Card : MonoBehaviour
         currentState = CardState.unflipping;
     }
 
-    public void EndFlip()
+    public void OnEndFlip()
     {
         currentState = CardState.flipped;
         if(OnCardFlip != null)
@@ -77,7 +84,7 @@ public class Card : MonoBehaviour
             OnCardFlip = null;
         }
     }
-    public void EndUnflip()
+    public void OnEndUnflip()
     {
         currentState = CardState.normal;
         if(OnCardUnflip != null)
