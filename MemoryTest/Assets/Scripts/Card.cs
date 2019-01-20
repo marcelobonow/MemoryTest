@@ -30,7 +30,6 @@ public class Card : MonoBehaviour
     {
         currentState = CardState.normal;
     }
-
     public void SetCard(int spriteId, int cardId, Sprite sprite, CardsController controller)
     {
         frontCardImage.sprite = sprite;
@@ -49,12 +48,10 @@ public class Card : MonoBehaviour
     {
         OnCardFlip += action;
     }
-
     public bool DoesPair(Card otherCard)
     {
         return otherCard.GetSpriteId() == spriteId;
     }
-
     public void OnClick()
     {
         cardController.OnCardClick(this);
